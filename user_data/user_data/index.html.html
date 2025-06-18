@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QuickBite - Canteen Ordering System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background-color: #ecb744;
+    }
+
+    header {
+      background-color: #f39c12;
+      color: #311c1c;
+      padding: 1.2rem 2rem;     
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background-color:#7d7373;
+      padding: 1rem 0;
+    }
+
+    nav a {
+      color: #1a1919;
+      margin: 0 20px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    nav a:hover {
+      color: #f39c12;
+    }
+
+    .container {
+      text-align: center;
+      padding: 6rem 2rem;
+      flex: 1;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                  url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center/cover;
+      color: #f1f1f1;
+    }
+
+    .container h1 {
+      font-size: 3rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .container p {
+      font-size: 1.3rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .buttons {
+      margin-top: 2rem;
+    }
+
+    .buttons a {
+      display: inline-block;
+      padding: 0.9rem 1.8rem;
+      margin: 0 15px;
+      background-color: #f39c12;
+      color: white;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    .buttons a:hover {
+      background-color: #e67e22;
+    }
+
+    footer {
+      background-color:  #f39c12;
+      color: #f1f1f1;
+      text-align: center;
+      padding: 1.5rem 2rem;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    QuickBite
+  </header>
+
+  <nav>
+    <a href="user-login.html">Login</a>
+    <a href="register.html">Register</a>
+    <a href="staff-login.html">Admin</a>
+    <a href="about.html">About Us</a>
+    <a href="canteen.html">Canteen</a>
+  </nav>
+
+  <div class="container">
+    <h1>Welcome to QuickBite – Fast, Fresh & Flavorful!</h1>
+    <p>"Skip the line — your next bite is just a click away!"</p>
+
+    <div class="buttons">
+      <a href="user-login.html">User Login</a>
+      <a href="staff-login.html">Staff Login</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 QuickBite. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>

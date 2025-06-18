@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment - QuickBite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center/cover;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .home-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    h2, h3 {
+      text-align: center;
+      color: #f1f1f1;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .total {
+      font-weight: bold;
+      text-align: right;
+      margin-top: 20px;
+    }
+
+    button, .payment-option {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color:#f39c12;
+      
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .payment-option:hover, button:hover {
+      background-color: #311c1c;
+    }
+
+    .receipt, .payment-form, .payment-methods {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .receipt {
+      padding: 20px;
+      background-color: rgba(39, 174, 96, 0.1);
+      border: 2px solid #2ecc71;
+      border-radius: 10px;
+    }
+
+    .receipt p {
+      margin: 8px 0;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+      }
+
+      .home-btn {
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html">🏠 Home</a>
+
+  <div class="container">
+    <h2>Confirm Your Order</h2>
+    <div id="order-summary"></div>
+    <div class="total" id="order-total"></div>
+
+    <label for="username">Your Name:</label>
+    <input type="text" id="username" placeholder="Enter your name">
+
+    <button onclick="showPaymentOptions()">Continue to Payment</button>
+
+    <div class="payment-methods" id="payment-methods">
+      <h3>Select Payment Method</h3>
+      <div class="payment-option" onclick="showPaymentForm('GPay')">📱 GPay</div>
+      <div class="payment-option" onclick="showPaymentForm('QR Code')">🔳 QR Code</div>
+      <div class="payment-option" onclick="showPaymentForm('Card')">💳 Card</div>
+      <div class="payment-option" onclick="showPaymentForm('Cash')">💵 Cash on Delivery</div>
+    </div>
+
+    <div class="payment-form" id="payment-form">
+      <h3 id="payment-method-title"></h3>
+      <div id="method-inputs"></div>
+      <button onclick="completePayment()">Confirm & Pay</button>
+    </div>
+
+    <div class="receipt" id="receipt">
+      <h3>✅ Payment Successful</h3>
+      <p><strong>Name:</strong> <span id="receipt-name"></span></p>
+      <p><strong>Items Ordered:</strong></p>
+      <div id="receipt-items"></div>
+      <p id="receipt-total"></p>
+      <p><strong>Payment Method:</strong> <span id="receipt-method"></span></p>
+      <p>Thank you for ordering with <strong>QuickBite</strong>!</p>
+    </div>
+  </div>
+
+  <script>
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const total = localStorage.getItem('total') || 0;
+    const orderSummary = document.getElementById('order-summary');
+    const orderTotal = document.getElementById('order-total');
+    const receiptItems = document.getElementById('receipt-items');
+    const receiptTotal = document.getElementById('receipt-total');
+    const receiptMethod = document.getElementById('receipt-method');
+    const receiptName = document.getElementById('receipt-name');
+    const paymentForm = document.getElementById('payment-form');
+    const methodInputs = document.getElementById('method-inputs');
+    const paymentTitle = document.getElementById('payment-method-title');
+
+    let selectedMethod = '';
+
+    if (cart.length === 0) {
+      orderSummary.innerHTML = "<p>No order found.</p>";
+    } else {
+      cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'order-item';
+        div.innerHTML = `<span>${item.name}</span><span>₹${item.price}</span>`;
+        orderSummary.appendChild(div);
+      });
+    }
+
+    orderTotal.textContent = `Total: ₹${total}`;
+
+    function showPaymentOptions() {
+      const user = document.getElementById('username').value.trim();
+      if (!user) {
+        alert("Please enter your name.");
+        return;
+      }
+      document.getElementById('payment-methods').style.display = 'block';
+    }
+
+    function showPaymentForm(method) {
+      selectedMethod = method;
+      paymentForm.style.display = 'block';
+      paymentTitle.textContent = `Enter ${method} Details`;
+
+      let html = '';
+      if (method === 'Card') {
+        html = `
+          <input type="text" placeholder="Card Number" required>
+          <input type="text" placeholder="Name on Card" required>
+          <input type="number" placeholder="CVV" required>
+        `;
+      } else if (method === 'GPay') {
+        html = `<input type="text" placeholder="Enter GPay UPI ID" required>`;
+      } else if (method === 'QR Code') {
+        html = `<p>Scan the QR code with your payment app and click confirm.</p>`;
+      } else if (method === 'Cash') {
+        html = `<p>Pay at the time of delivery. Click confirm to place your order.</p>`;
+      }
+      methodInputs.innerHTML = html;
+    }
+
+    function completePayment() {
+      const user = document.getElementById('username').value.trim();
+      if (!user) {
+        alert("Name is required.");
+        return;
+      }
+
+      const orderData = {
+        name: user,
+        cart: cart,
+        total: total,
+        paymentMethod: selectedMethod,
+        timestamp: new Date().toLocaleString()
+      };
+
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      orders.push(orderData);
+      localStorage.setItem('orders', JSON.stringify(orders));
+
+      sessionStorage.setItem('currentReceipt', JSON.stringify(orderData));
+
+      localStorage.removeItem('cart');
+      localStorage.removeItem('total');
+
+      window.location.href = "receipt.html";
+    }
+  </script>
+</body>
+</html>

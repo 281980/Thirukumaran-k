@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Receipt - QuickBite</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center/cover;
+      background-size: cover;
+      padding: 20px;
+      color: rgb(31, 28, 28);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+
+    h2 {
+      text-align: center;
+      color: #28a745;
+    }
+
+    .receipt-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .total, .meta {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .meta span {
+      font-weight: normal;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .home-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+
+    .download-btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background-color: #0984e3;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .download-btn:hover {
+      background-color: #74b9ff;
+    }
+  </style>
+</head>
+<body>
+  <a class="home-btn" href="index.html.html">🏠 Home</a>
+
+  <div class="container">
+    <h2>✅ Payment Successful</h2>
+    <div class="meta"><strong>Name:</strong> <span id="user-name"></span></div>
+    <div class="meta"><strong>Payment Method:</strong> <span id="payment-method"></span></div>
+    <div class="meta"><strong>Date & Time:</strong> <span id="order-time"></span></div>
+
+    <h3>Items Ordered:</h3>
+    <div id="items-list"></div>
+
+    <div class="total" id="total-amount"></div>
+    <p style="text-align:center; margin-top: 30px;">Thank you for ordering with <strong>QuickBite</strong>!</p>
+
+    <button class="download-btn" onclick="downloadReceipt()">Download Receipt</button>
+  </div>
+
+  <script>
+    let receiptData = JSON.parse(sessionStorage.getItem('currentReceipt'));
+
+    if (!receiptData) {
+      document.body.innerHTML = "<p style='text-align:center;'>⚠️ No order found. Please place an order first.</p>";
+    } else {
+      document.getElementById('user-name').textContent = receiptData.name;
+      document.getElementById('payment-method').textContent = receiptData.paymentMethod;
+      document.getElementById('order-time').textContent = receiptData.timestamp;
+
+      const itemsList = document.getElementById('items-list');
+      receiptData.cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'receipt-item';
+        div.innerHTML = `<span>${item.name}</span><span>₹${item.price}</span>`;
+        itemsList.appendChild(div);
+      });
+
+      document.getElementById('total-amount').textContent = `Total: ₹${receiptData.total}`;
+
+      // Optional: clear sessionStorage to avoid showing old data if page is reloaded
+      sessionStorage.removeItem('currentReceipt');
+    }
+
+    function downloadReceipt() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('QuickBite Receipt', 20, 20);
+      doc.text(`Name: ${receiptData.name}`, 20, 40);
+      doc.text(`Payment Method: ${receiptData.paymentMethod}`, 20, 50);
+      doc.text(`Date & Time: ${receiptData.timestamp}`, 20, 60);
+
+      let yPos = 70;
+      receiptData.cart.forEach(item => {
+        doc.text(`${item.name} - ₹${item.price}`, 20, yPos);
+        yPos += 10;
+      });
+
+      doc.text(`Total: ₹${receiptData.total}`, 20, yPos);
+
+      doc.save('receipt.pdf');
+    }
+  </script>
+
+  <!-- Include jsPDF for downloading the receipt as PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</body>
+</html>

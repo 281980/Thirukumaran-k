@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canteen Menu - QuickBite</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center/cover;
+      background-size: cover;
+      color: white;
+      line-height: 1.6;
+      padding: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: flex-start;
+      padding: 1rem 2rem;
+    }
+
+    .home-btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .home-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1rem;
+      padding: 2rem;
+    }
+
+    .image-box {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .image-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .image-box img:hover {
+      transform: scale(1.1);
+    }
+
+    .image-box p {
+      padding: 1rem;
+      font-size: 1.1rem;
+      background-color: #fff;
+      margin-top: 0.5rem;
+    }
+
+    .price {
+      font-size: 1.1rem;
+      color: #e74c3c;
+      font-weight: bold;
+      margin-top: 0.5rem;
+    }
+
+    .glow {
+      box-shadow: 0 0 15px 5px #f1c40f !important;
+      transition: box-shadow 0.3s ease-in-out;
+    }
+
+    /* Popup Modal Style */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .popup-content h3 {
+      margin-bottom: 1rem;
+    }
+
+    .popup-content button {
+      background-color: #2c3e50;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .popup-content button:hover {
+      background-color: #34495e;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="home-btn" href="index.html.html">🏠 Home</a>
+  </nav>
+
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <h3 id="popupTitle">Item Name</h3>
+      <p id="popupPrice" class="price">₹0</p>
+      <button onclick="closePopup()">Close</button>
+    </div>
+  </div>
+  
+  <div class="container">
+    <div class="image-box" onclick="showPopup('samoza')">
+      <img src="image1.jpg" alt="samoza">
+      <p>samoza</p>
+      <p><span class="price">₹12</span></p>
+    </div>
+    <div class="image-box" onclick="showPopup('Burger')">
+      <img src="image2.jpg" alt="Burger">
+      <p>Burger</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Pasta')">
+      <img src="image3.jpg" alt="Pasta">
+      <p>chai</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Salad')">
+      <img src="image4.jpg" alt="Salad">
+      <p>Salad</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Sushi')">
+      <img src="image5.jpg" alt="Sushi">
+      <p>Sushi</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Tacos')">
+      <img src="image6.jpg" alt="Tacos">
+      <p>Tacos</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Sandwich')">
+      <img src="image7.jpg" alt="Sandwich">
+      <p>Sandwich</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Fried Chicken')">
+      <img src="image8.jpg" alt="Fried Chicken">
+      <p>Fried Chicken</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Fries')">
+      <img src="image9.jpg" alt="Fries">
+      <p>Fries</p>
+    </div>
+    <div class="image-box" onclick="showPopup('Ice Cream')">
+      <img src="image10.jpg" alt="Ice Cream">
+      <p>Ice Cream</p>
+    </div>
+  </div>
+
+  <script>
+    let currentGlow = null;
+
+    function showPopup(name) {
+      const itemPrices = {
+        "samoza": 12,
+        "Burger": 50,
+        "Pasta": 40,
+        "Salad": 30,
+        "Sushi": 60,
+        "Tacos": 35,
+        "Sandwich": 25,
+        "Fried Chicken": 70,
+        "Fries": 20,
+        "Ice Cream": 15
+      };
+
+      document.getElementById('popupTitle').textContent = name;
+      document.getElementById('popupPrice').textContent = "₹" + (itemPrices[name] || "0");
+      document.getElementById('popup').style.display = 'flex';
+
+      if (currentGlow) {
+        currentGlow.classList.remove('glow');
+      }
+      const boxes = document.querySelectorAll('.image-box');
+      boxes.forEach(box => {
+        if (box.textContent.trim().toLowerCase().includes(name.toLowerCase())) {
+          box.classList.add('glow');
+          currentGlow = box;
+        }
+      });
+    }
+
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+      if (currentGlow) {
+        currentGlow.classList.remove('glow');
+        currentGlow = null;
+      }
+    }
+  </script>
+  
+</body>
+</html>

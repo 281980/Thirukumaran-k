@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: #fff;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center/cover;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .home-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+
+    h1 {
+      text-align: center;
+      padding-top: 60px;
+      color: white;
+    }
+
+    .menu, .cart {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #f1f1f1;
+    }
+
+    .menu-item, .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+    }
+
+    .menu-item button {
+      padding: 6px 12px;
+      background-color: #00b894;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .menu-item button:hover {
+      background-color: #00cec9;
+    }
+
+    .cart-total {
+      font-weight: bold;
+      margin-top: 10px;
+      text-align: right;
+      color: #fff;
+    }
+
+    #submit-order {
+      margin-top: 15px;
+      padding: 12px;
+      width: 100%;
+      background-color: #f39c12;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    #submit-order:hover {
+      background-color: #311c1c;
+    }
+
+    @media (max-width: 600px) {
+      .menu, .cart {
+        margin: 20px;
+      }
+
+      .home-btn {
+        padding: 8px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html.html">🏠 Home</a>
+
+  <h1>Welcome to the Canteen</h1>
+
+  <!-- Menu Section -->
+  <div class="menu" id="menu-container">
+    <h2>🍔 Menu</h2>
+    <!-- Menu items will be loaded here -->
+  </div>
+
+  <!-- Cart Section -->
+  <div class="cart" id="cart">
+    <h2>🛒 Cart</h2>
+    <div id="cart-items"></div>
+    <div class="cart-total" id="cart-total">Total: ₹0</div>
+    <button id="submit-order">Submit Order</button>
+  </div>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItemsContainer = document.getElementById('cart-items');
+    const cartTotalEl = document.getElementById('cart-total');
+
+    fetch('menu_api.php')
+      .then(response => response.json())
+      .then(data => {
+        const menuContainer = document.getElementById('menu-container');
+        if (data.status === "success") {
+          data.menu.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'menu-item';
+            div.innerHTML = ` 
+              <span>${item.name} - ₹${item.price}</span>
+              <button onclick='addToCart(${JSON.stringify(item)})'>Add</button>
+            `;
+            menuContainer.appendChild(div);
+          });
+        } else {
+          menuContainer.innerHTML += `<p>Failed to load menu.</p>`;
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching menu:', error);
+      });
+
+    function addToCart(item) {
+      cart.push(item);
+      updateCartDisplay();
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function updateCartDisplay() {
+      cartItemsContainer.innerHTML = '';
+      let total = 0;
+      cart.forEach((item, index) => {
+        total += parseFloat(item.price);
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <span>${item.name} - ₹${item.price}</span>
+          <button onclick="removeFromCart(${index})">❌</button>
+        `;
+        cartItemsContainer.appendChild(div);
+      });
+      cartTotalEl.textContent = `Total: ₹${total.toFixed(2)}`;
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      updateCartDisplay();
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    document.getElementById('submit-order').addEventListener('click', () => {
+      if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      localStorage.setItem('total', total.toFixed(2));
+      window.location.href = "payment.html";
+    });
+
+    updateCartDisplay();
+  </script>
+
+</body>
+</html>

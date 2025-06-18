@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "name": "Burger",
+        "price": 5
+    },
+    {
+        "id": 2,
+        "name": "Pizza",
+        "price": 8
+    },
+    {
+        "id": 3,
+        "name": "Pasta",
+        "price": 6
+    },
+    {
+        "id": 4,
+        "name": "Cold Coffee",
+        "price": 3
+    },
+    {
+        "id": 5,
+        "name": "French Fries",
+        "price": 4
+    }
+]

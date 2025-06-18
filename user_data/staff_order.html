@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Staff - QuickBite</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                  url('https://images.unsplash.com/photo-1600891964599-f61ba0e24092') no-repeat center center/cover;
+      background-size: cover;
+      color: white;
+      padding: 20px;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .home-btn:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+
+    .order-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+      color: #333;
+    }
+
+    .order-card h3 {
+      margin: 0 0 10px 0;
+    }
+
+    .order-items {
+      margin: 10px 0;
+    }
+
+    .order-items span {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .complete-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .complete-btn:hover {
+      background-color: #218838;
+    }
+
+    .section-title {
+      font-size: 24px;
+      margin-top: 40px;
+      text-decoration: underline;
+    }
+
+    .login-container {
+      background-color:#f39c12;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="home-btn" href="index.html.html">🏠 Home</a>
+
+  <div class="login-container">
+    <h2>Received Orders</h2>
+    <div id="orders-container"></div>
+
+    <h2 class="section-title">Completed Orders</h2>
+    <div id="completed-orders-container"></div>
+  </div>
+
+  <script>
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    let completedOrders = JSON.parse(localStorage.getItem('completedOrders')) || [];
+    const container = document.getElementById('orders-container');
+    const completedContainer = document.getElementById('completed-orders-container');
+
+    function renderOrders() {
+      container.innerHTML = "";
+
+      if (orders.length === 0) {
+        container.innerHTML = "<p>No orders yet.</p>";
+      } else {
+        orders.forEach((order, index) => {
+          const div = document.createElement('div');
+          div.className = 'order-card';
+          div.innerHTML = `
+            <h3>${order.name}</h3>
+            <div class="order-items">
+              ${order.cart.map(item => `<span>${item.name} - ₹${item.price}</span>`).join('')}
+            </div>
+            <p><strong>Total:</strong> ₹${order.total}</p>
+            <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+            <p><small>Ordered at: ${order.timestamp}</small></p>
+            <button class="complete-btn" onclick="markAsCompleted(${index})">✅ Mark as Completed</button>
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      renderCompletedOrders();
+    }
+
+    function renderCompletedOrders() {
+      completedContainer.innerHTML = "";
+
+      if (completedOrders.length === 0) {
+        completedContainer.innerHTML = "<p>No completed orders yet.</p>";
+      } else {
+        completedOrders.forEach(order => {
+          const div = document.createElement('div');
+          div.className = 'order-card';
+          div.innerHTML = `
+            <h3>${order.name}</h3>
+            <div class="order-items">
+              ${order.cart.map(item => `<span>${item.name} - ₹${item.price}</span>`).join('')}
+            </div>
+            <p><strong>Total:</strong> ₹${order.total}</p>
+            <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+            <p><small>Ordered at: ${order.timestamp}</small></p>
+          `;
+          completedContainer.appendChild(div);
+        });
+      }
+    }
+
+    function markAsCompleted(index) {
+      if (confirm("Mark this order as completed?")) {
+        const completedOrder = orders.splice(index, 1)[0]; // Move the order from "orders" to "completedOrders"
+        completedOrders.push(completedOrder);
+        localStorage.setItem('orders', JSON.stringify(orders));
+        localStorage.setItem('completedOrders', JSON.stringify(completedOrders));
+
+        renderOrders(); // Re-render the orders
+      }
+    }
+
+    // Initial render
+    renderOrders();
+  </script>
+  
+</body>
+</html>
